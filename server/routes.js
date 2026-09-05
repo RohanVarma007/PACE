@@ -14,5 +14,13 @@ router.post("/", (req, res) => {
         res.status(500).json({ error: "Failed to save run" });
     });
 });
+router.get("/userdata", async (req, res) => {
+    try {
+        const data = await splitModel.find();
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch user data" });
+    }
+});
 
 module.exports = router;

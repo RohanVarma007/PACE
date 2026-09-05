@@ -4,6 +4,8 @@ function RunForm() {
   const { register, control, handleSubmit } = useForm({
     defaultValues: {
       runName: "",
+      totalDistance: "",
+      runDuration: "",
       splits: [{ distance: "", time: "" }]
     }
   });
@@ -37,7 +39,8 @@ function RunForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input {...register("runName")} placeholder="Run name" />
-
+      <input {...register("totalDistance")} placeholder="Total distance" />
+      <input {...register("runDuration")} placeholder="Run duration" />
       {splitFields.map((field, index) => (
         <div key={field.id}>
           <input {...register(`splits.${index}.distance`)} placeholder="Distance" />
