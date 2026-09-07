@@ -1,3 +1,5 @@
+// This code defines something called run form which consistsw of run name total distance total duratio and splits 
+
 import { useForm, useFieldArray } from "react-hook-form";
 
 function RunForm() {
