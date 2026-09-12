@@ -2,9 +2,6 @@
 // // So the user can see their runs and click on them to view more details. 
 // // The UserDatav component fetches the user data from the server and displays it in a list format. 
 
-
-
-
 import { useState, useEffect } from "react";
 
 function UserDatav() {
@@ -16,7 +13,15 @@ function UserDatav() {
 
     const fetchUserData = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/runs/userdata");
+            const response = await fetch("http://localhost:5000/userdata", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId: localStorage.getItem("id")
+                })
+            });
             const data = await response.json();
             setUserData(data);
         } catch (error) {
