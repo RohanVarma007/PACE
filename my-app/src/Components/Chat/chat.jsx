@@ -8,7 +8,7 @@ function ChatBot() {
     const handleSend = async () => {
         if (message.trim() === "") return;
 
-        const userMsg = { sender: "User", text: message };
+        const userMsg = { sender: "User", text: message }; 
         const ai = async () => {
             try {
                 const response = await fetch("http://localhost:5000/chat", {
@@ -16,7 +16,7 @@ function ChatBot() {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ message: userMsg.text })
+                    body: JSON.stringify({ message: userMsg.text, userId: localStorage.getItem("id") })
                 });
                 const data = await response.json();
                 return data.aiResponse;
@@ -26,6 +26,7 @@ function ChatBot() {
             }
         };
         const aiMsg = { sender: "AI", text: await ai() };
+        
 
         setChatHistory([...chatHistory, userMsg, aiMsg]);
         setMessage("");
