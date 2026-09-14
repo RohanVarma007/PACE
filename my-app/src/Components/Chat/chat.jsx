@@ -8,7 +8,7 @@ function ChatBot() {
     const handleSend = async () => {
         if (message.trim() === "") return;
 
-        const userMsg = { sender: "User", text: message }; 
+        const userMsg = { sender: "User", text: message };
         const ai = async () => {
             try {
                 const response = await fetch("http://localhost:5000/chat", {
@@ -26,7 +26,7 @@ function ChatBot() {
             }
         };
         const aiMsg = { sender: "AI", text: await ai() };
-        
+
 
         setChatHistory([...chatHistory, userMsg, aiMsg]);
         setMessage("");
@@ -41,7 +41,17 @@ function ChatBot() {
 
     return (
         <div className="chatbot-container">
+            <div className="chat-header">
+                <p className="text-eyebrow" style={{ marginBottom: '4px' }}>AI Coach</p>
+                <h1 className="text-display-md">Chat</h1>
+            </div>
+
             <div className="chatmessage">
+                {chatHistory.length === 0 && (
+                    <p className="text-muted" style={{ textAlign: 'center', marginTop: 'auto', marginBottom: 'auto' }}>
+                        Ask your AI running coach anything.
+                    </p>
+                )}
                 {chatHistory.map((chat, index) => (
                     <div key={index} className={`chat-message ${chat.sender.toLowerCase()}`}>
                         {chat.text}

@@ -4,9 +4,56 @@ const { runsConnection } = require('./mongo/db.js');
 const splitModel = require('./mongo/schema/splitschema.js');
 const messageModel = require('./mongo/schema/messages.js');
 const usernameModel = require('./mongo/schema/username.js');
+const coachModel = require('./mongo/schema/coach.js');
 const chatbot = require('./chatbot.js');
 const bcrypt = require('bcrypt');
+const getChatResponse = require('./chatbot.js');
 
+router.get("/run/:runId", async (req, res) => {
+    try {
+        const runId = req.params.runId;
+        console.log("Fetching run with ID:", runId);
+
+        const runData = await splitModel.findById(runId);
+        console.log("Run data found:", runData);
+
+        if (!runData) {
+            return res.status(404).json({ error: "Run not found", runId });
+        }
+        res.json(runData);
+    } catch (err) {
+        console.error("Error fetching run:", err);
+        res.status(500).json({ error: "Failed to fetch run data", details: err.message });
+    }
+});
+
+router.post("/coach", async (req, res) => {
+    try {
+        const COACH_SYSTEM_PROMPT = `You are a supportive, knowledgeable running coach helping a beginner runner improve safely.
+
+Your priorities, in order:
+1. Injury prevention — never suggest sudden jumps in distance, pace, or frequency. Follow the 10% rule (don't increase weekly mileage by more than ~10% week to week).
+2. Sustainable, gradual progress over quick results.
+3. Practical, specific feedback based on the run data given to you (splits, pace, distance, duration) — not generic advice.
+
+When responding:
+- Keep it encouraging but honest — call out real issues (e.g. going out too fast, uneven splits) without being harsh.
+- Give ONE or TWO concrete, actionable suggestions per response, not a long list.
+- If the data suggests overtraining, poor pacing, or risk of injury, say so clearly and recommend rest or an easier session.
+- Avoid jargon — explain things simply, as if talking to someone new to running.
+- Never suggest specific training plans beyond general pacing/frequency guidance — you're a supportive coach, not a replacement for a certified trainer or doctor.
+
+Keep responses short — 3-5 sentences unless the user asks for more detail.`;
+        console.log("Received suggestions:");
+        suggestions = await getChatResponse(req.body.suggestions);
+        const contextPrompt = `${COACH_SYSTEM_PROMPT}\n\n${req.body.suggestions}`;
+        suggestions = await getChatResponse(contextPrompt);
+        const coach = await coachModel.create({ ...req.body, suggestions });
+        res.status(201).json(coach);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to create coach" });
+    }
+});
 
 router.put("/runs/:existingRunId", async (req, res) => {
     try {

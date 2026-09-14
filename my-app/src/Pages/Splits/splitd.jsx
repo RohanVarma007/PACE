@@ -1,11 +1,15 @@
 import { useForm, useFieldArray } from "react-hook-form";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from "react-router-dom";
 
-function RunForm() {
-  const [isEditing, setIsEditing] = useState(true);
-  const [existingRunId, setExistingRunId] = useState(null); 
+function RunForm({ runIdProp, onDataLoaded }) {
+  const { runId } = useParams();
+  const finalRunId = runIdProp || runId;
+  const [isEditing, setIsEditing] = useState(!finalRunId);
+  const [existingRunId, setExistingRunId] = useState(finalRunId || null);
+  const [loading, setLoading] = useState(!!finalRunId);
 
-  const { register, control, handleSubmit } = useForm({
+  const { register, control, handleSubmit, reset } = useForm({
     defaultValues: {
       runName: "",
       totalDistance: "",
@@ -18,6 +22,44 @@ function RunForm() {
     control,
     name: "splits"
   });
+
+  useEffect(() => {
+    if (finalRunId) {
+      fetchRunData();
+    }
+  }, [finalRunId]);
+
+  const fetchRunData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost:5000/run/${finalRunId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch run');
+
+      const data = await response.json();
+      reset({
+        runName: data.runName,
+        totalDistance: data.totalDistance,
+        runDuration: data.runDuration,
+        splits: data.splits || [{ distance: "", time: "" }]
+      });
+      setExistingRunId(data._id);
+      setIsEditing(false);
+
+      if (onDataLoaded) {
+        onDataLoaded(data);
+      }
+    } catch (err) {
+      console.error('Error fetching run:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onSubmit = async (data) => {
     const payload = { ...data, userId: localStorage.getItem("id") };
@@ -49,47 +91,124 @@ function RunForm() {
     }
   };
 
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '60px 40px',
+        color: 'var(--body)'
+      }}>
+        <p>Loading run details...</p>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <input {...register("runName")} placeholder="Run name" disabled={!isEditing} />
-      <input {...register("totalDistance")} placeholder="Total distance" disabled={!isEditing} />
-      <input {...register("runDuration")} placeholder="Run duration" disabled={!isEditing} />
+    <div style={{ padding: '0' }}>
+      <div className="card">
+        {/* Header */}
+        <p className="text-eyebrow mb-2">{isEditing ? 'Log Your Run' : 'Your Run'}</p>
+        <h1 className="text-display-md mb-8">{isEditing ? 'New Run' : 'Run Details'}</h1>
 
-      {splitFields.map((field, index) => (
-        <div key={field.id}>
-          <input {...register(`splits.${index}.distance`)} placeholder="Distance" disabled={!isEditing} />
-          <input {...register(`splits.${index}.time`)} placeholder="Time" disabled={!isEditing} />
-          {isEditing && (
-            <button type="button" onClick={() => removeSplit(index)}>
-              Remove split
-            </button>
-          )}
-        </div>
-      ))}
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+          {/* Run info fields - clean grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-muted text-sm">Run Name</label>
+              <input {...register("runName")} placeholder="Morning run" disabled={!isEditing} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-muted text-sm">Total Distance</label>
+              <input {...register("totalDistance")} placeholder="5.0 km" disabled={!isEditing} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-muted text-sm">Duration</label>
+              <input {...register("runDuration")} placeholder="25:30" disabled={!isEditing} />
+            </div>
+          </div>
 
-      {isEditing && (
-        <button type="button" onClick={() => appendSplit({ distance: '', time: '' })}>
-          Add split
-        </button>
-      )}
+          {/* Divider */}
+          <div style={{ height: '2px', backgroundColor: 'var(--primary)', opacity: 0.3 }} />
 
-      {isEditing ? (
-  <button type="submit">
-    {existingRunId ? "Save" : "Submit"}
-  </button>
-) : (
-  <button
-    type="button"
-    onClick={(e) => {
-      e.preventDefault();
-      console.log("edit clicked");
-      setIsEditing(true);
-    }}
-  >
-    Edit
-  </button>
-)}
-    </form>
+          {/* Splits - consistent from first row */}
+          <div>
+            <p className="text-eyebrow mb-4">Splits</p>
+
+            <div className="flex flex-col gap-3">
+              {splitFields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="flex items-end gap-3"
+                  style={{
+                    padding: '12px 16px',
+                    border: '1px dashed rgba(79,93,117,0.4)',
+                    borderRadius: 'var(--radius-md)',
+                  }}
+                >
+                  <span className="text-muted text-sm font-semibold" style={{ minWidth: '24px', paddingBottom: '12px' }}>
+                    {index + 1}
+                  </span>
+
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <label className="text-muted text-sm">Distance</label>
+                    <input {...register(`splits.${index}.distance`)} placeholder="1.0 km" disabled={!isEditing} />
+                  </div>
+
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <label className="text-muted text-sm">Time</label>
+                    <input {...register(`splits.${index}.time`)} placeholder="5:10" disabled={!isEditing} />
+                  </div>
+
+                  {isEditing && (
+                    <button
+                      type="button"
+                      className="btn-danger"
+                      style={{ padding: '8px 12px', fontSize: '14px', marginBottom: '0' }}
+                      onClick={() => removeSplit(index)}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {isEditing && (
+              <button
+                type="button"
+                className="btn-ghost mt-4 w-full"
+                style={{ border: '1px dashed var(--hairline)' }}
+                onClick={() => appendSplit({ distance: '', time: '' })}
+              >
+                + Add split
+              </button>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 mt-2">
+            {isEditing ? (
+              <button type="submit" className="btn-primary flex-1">
+                {existingRunId ? "Save Changes" : "Submit Run"}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="btn-outline flex-1"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsEditing(true);
+                }}
+              >
+                Edit
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+    </div>
   );
 }
 

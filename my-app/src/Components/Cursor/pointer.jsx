@@ -14,7 +14,7 @@ export default function Pointer() {
         COLOR_UPDATE_SPEED={10}
         SHADING
         RAINBOW_MODE={false}
-        COLOR="#A855F7"
+        COLOR="#00d992"
       />
       <Outlet />
     </>
