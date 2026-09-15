@@ -1,7 +1,7 @@
 import {useState} from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import API from "../../api.jsx";
 
 export default function Login() {
   const { register, handleSubmit } = useForm({
@@ -16,7 +16,7 @@ export default function Login() {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:5000/login", data);
+      const response = await API.post("/login", data);
       if (response.status === 200) {
         console.log("Login successful");
         localStorage.setItem("username", response.data.username);

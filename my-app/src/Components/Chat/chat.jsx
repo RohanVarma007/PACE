@@ -1,5 +1,6 @@
 import { useState } from "react";
 import './chatstyle.css';
+import API from '../../api.jsx';
 //chatbot component with like neat formatting and ai replies
 function ChatBot() {
     const [message, setMessage] = useState("");
@@ -11,14 +12,11 @@ function ChatBot() {
         const userMsg = { sender: "User", text: message };
         const ai = async () => {
             try {
-                const response = await fetch("http://localhost:5000/chat", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ message: userMsg.text, userId: localStorage.getItem("id") })
+                const response = await API.post("/chat", {
+                    message: userMsg.text,
+                    userId: localStorage.getItem("id")
                 });
-                const data = await response.json();
+                const data = await response.data;
                 return data.aiResponse;
             } catch (error) {
                 console.error("Error fetching AI response:", error);

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 mongoose.connect(process.env.Mongodb_URI);
 
 mongoose.connection.on('connected', () => {

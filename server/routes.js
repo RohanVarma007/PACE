@@ -31,28 +31,28 @@ router.post("/coach", async (req, res) => {
     try {
         const COACH_SYSTEM_PROMPT = `You are a supportive, knowledgeable running coach helping a beginner runner improve safely.
 
-Your priorities, in order:
-1. Injury prevention — never suggest sudden jumps in distance, pace, or frequency. Follow the 10% rule (don't increase weekly mileage by more than ~10% week to week).
-2. Sustainable, gradual progress over quick results.
-3. Practical, specific feedback based on the run data given to you (splits, pace, distance, duration) — not generic advice.
+        Your priorities, in order:
+        1. Injury prevention — never suggest sudden jumps in distance, pace, or frequency. Follow the 10% rule (don't increase weekly mileage by more than ~10% week to week).
+        2. Sustainable, gradual progress over quick results.
+        3. Practical, specific feedback based on the run data given to you (splits, pace, distance, duration) — not generic advice.
 
-When responding:
-- Keep it encouraging but honest — call out real issues (e.g. going out too fast, uneven splits) without being harsh.
-- Give ONE or TWO concrete, actionable suggestions per response, not a long list.
-- If the data suggests overtraining, poor pacing, or risk of injury, say so clearly and recommend rest or an easier session.
-- Avoid jargon — explain things simply, as if talking to someone new to running.
-- Never suggest specific training plans beyond general pacing/frequency guidance — you're a supportive coach, not a replacement for a certified trainer or doctor.
+        When responding:
+        - Keep it encouraging but honest — call out real issues (e.g. going out too fast, uneven splits) without being harsh.
+        - Give ONE or TWO concrete, actionable suggestions per response, not a long list.
+        - If the data suggests overtraining, poor pacing, or risk of injury, say so clearly and recommend rest or an easier session.
+        - Avoid jargon — explain things simply, as if talking to someone new to running.
+        - Never suggest specific training plans beyond general pacing/frequency guidance — you're a supportive coach, not a replacement for a certified trainer or doctor.
 
-Keep responses short — 3-5 sentences unless the user asks for more detail.`;
+        Keep responses short — 3-5 sentences unless the user asks for more detail.`;
         console.log("Received suggestions:");
-        suggestions = await getChatResponse(req.body.suggestions);
-        const contextPrompt = `${COACH_SYSTEM_PROMPT}\n\n${req.body.suggestions}`;
-        suggestions = await getChatResponse(contextPrompt);
+        const contextPrompt = `${COACH_SYSTEM_PROMPT}\n\n${JSON.stringify(req.body.runData)}`;
+        const suggestions = await getChatResponse(contextPrompt);
         const coach = await coachModel.create({ ...req.body, suggestions });
         res.status(201).json(coach);
     } catch (err) {
-        res.status(500).json({ error: "Failed to create coach" });
-    }
+    console.log("BACKEND ERROR:", err.response?.data);
+    setError(err.response?.data?.error || err.message);
+}
 });
 
 router.put("/runs/:existingRunId", async (req, res) => {
@@ -67,17 +67,36 @@ router.put("/runs/:existingRunId", async (req, res) => {
     }
 });
 
+// router.post('/chat', async (req, res) => {
+//     const userMessage = req.body.message;
+//     console.log(userMessage);
+//     const aiResponse = await chatbot.getChatResponse(userMessage);
+//     const mess = await messageModel.create({
+//         aiMessage: aiResponse,
+//         humanMessage: userMessage,
+//         userId: req.body.userId
+//     });
+//     await mess.save();
+//     res.json({ aiResponse });
+// });
 router.post('/chat', async (req, res) => {
-    const userMessage = req.body.message;
-    console.log(userMessage);
-    const aiResponse = await chatbot.getChatResponse(userMessage);
-    const mess = await messageModel.create({
-        aiMessage: aiResponse,
-        humanMessage: userMessage,
-        userId: req.body.userId
-    });
-    await mess.save();
-    res.json({ aiResponse });
+    try {
+        console.log("1. CHAT ROUTE REACHED");
+
+        const userMessage = req.body.message;
+        console.log("2. User message:", userMessage);
+
+        const aiResponse = await chatbot.getChatResponse(userMessage);
+        console.log("3. AI response:", aiResponse);
+
+        res.json({ aiResponse });
+
+    } catch (error) {
+        console.error("4. CHAT ROUTE ERROR:", error);
+        res.status(500).json({
+            error: error.message
+        });
+    }
 });
 
 router.post("/run", async (req, res) => {

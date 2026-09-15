@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import RunForm from './splitd.jsx';
-
+import API from '../../api.jsx';
 function Coach() {
   const { runId } = useParams();
   const [coachResponse, setCoachResponse] = useState(null);
@@ -25,30 +25,20 @@ function Coach() {
       setFetchingCoach(true);
       setError(null);
 
-      const response = await fetch('http://localhost:5000/coach', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          splits: runData.splits,
-          runData: runData,
-          runId: runId,
-          userId: localStorage.getItem("id"),
-        }),
+      const response = await API.post("/coach", {
+        splits: runData.splits,
+        runData: runData,
+        runId: runId,
+        userId: localStorage.getItem("id"),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get coaching advice');
-      }
-
-      const data = await response.json();
-      setCoachResponse(data);
+      setCoachResponse(response.data.suggestions);
       setShowAICoach(false);
     } catch (err) {
-      console.error('Error fetching coach response:', err);
-      setError(err.message);
-    } finally {
+    console.log("BACKEND ERROR:", err.response?.data);
+    setError(err.response?.data?.error || err.message);
+}
+    finally {
       setFetchingCoach(false);
     }
   };

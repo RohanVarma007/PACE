@@ -1,7 +1,7 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
-
+import API from "../../api.jsx";
 function RunForm({ runIdProp, onDataLoaded }) {
   const { runId } = useParams();
   const finalRunId = runIdProp || runId;
@@ -32,27 +32,19 @@ function RunForm({ runIdProp, onDataLoaded }) {
   const fetchRunData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:5000/run/${finalRunId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) throw new Error('Failed to fetch run');
-
-      const data = await response.json();
+      const response = await API.get(`/run/${finalRunId}`);
+      
       reset({
-        runName: data.runName,
-        totalDistance: data.totalDistance,
-        runDuration: data.runDuration,
-        splits: data.splits || [{ distance: "", time: "" }]
+        runName: response.data.runName,
+        totalDistance: response.data.totalDistance,
+        runDuration: response.data.runDuration,
+        splits: response.data.splits || [{ distance: "", time: "" }]
       });
-      setExistingRunId(data._id);
+      setExistingRunId(response.data._id);
       setIsEditing(false);
 
       if (onDataLoaded) {
-        onDataLoaded(data);
+        onDataLoaded(response.data);
       }
     } catch (err) {
       console.error('Error fetching run:', err);
@@ -65,24 +57,19 @@ function RunForm({ runIdProp, onDataLoaded }) {
     const payload = { ...data, userId: localStorage.getItem("id") };
 
     try {
-      const url = existingRunId
-        ? `http://localhost:5000/runs/${existingRunId}`
-        : "http://localhost:5000/run";
-      const method = existingRunId ? "PUT" : "POST";
+  const url = existingRunId
+    ? `/runs/${existingRunId}`
+    : "/run";
 
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+  const response = existingRunId
+    ? await API.put(url, payload)
+    : await API.post(url, payload);
 
-      if (!response.ok) throw new Error("Failed to save run");
 
-      const savedRun = await response.json();
-      console.log("Saved:", savedRun);
+      console.log("Saved:", response);
 
       if (!existingRunId) {
-        setExistingRunId(savedRun._id);
+        setExistingRunId(response.data._id);
       }
 
       setIsEditing(false);
