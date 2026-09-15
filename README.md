@@ -6,10 +6,11 @@
 
 The goal is simple: **running should be something you enjoy, not something that leaves you constantly dealing with fatigue or injuries.**
 
-  LIVE WEBSITE:pace-topaz-chi.vercel.app
+  Copy the link for the live website
+  LIVE WEBSITE : pace-topaz-chi.vercel.app
 
 
-  BACKEND:https://pace-n60f.onrender.com
+  BACKEND :https://pace-n60f.onrender.com
 
 ---
 
