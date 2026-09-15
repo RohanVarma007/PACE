@@ -18,7 +18,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Auth routes (no nav) */}
         <Route exact path="/login" element={<Login />} />
         <Route exact path="/signup" element={<Signup />} />
 

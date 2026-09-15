@@ -46,7 +46,7 @@ router.post("/coach", async (req, res) => {
         Keep responses short — 3-5 sentences unless the user asks for more detail.`;
         console.log("Received suggestions:");
         const contextPrompt = `${COACH_SYSTEM_PROMPT}\n\n${JSON.stringify(req.body.runData)}`;
-        const suggestions = await getChatResponse(contextPrompt);
+        const suggestions = await chatbot.getChatResponse(contextPrompt);
         const coach = await coachModel.create({ ...req.body, suggestions });
         res.status(201).json(coach);
     } catch (err) {
