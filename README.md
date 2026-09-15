@@ -6,11 +6,17 @@
 
 The goal is simple: **running should be something you enjoy, not something that leaves you constantly dealing with fatigue or injuries.**
 
-  Copy the link for the live website
-  LIVE WEBSITE : pace-topaz-chi.vercel.app
+---
 
+## 🌐 Live Deployment
 
-  BACKEND :https://pace-n60f.onrender.com
+**Live Website:**
+https://pace-topaz-chi.vercel.app/
+
+**Backend:**
+https://pace-n60f.onrender.com/
+
+The frontend and backend are independently deployed, with the frontend hosted on **Vercel** and the backend hosted on **Render**. The application uses **MongoDB Atlas** for persistent cloud-based data storage.
 
 ---
 
@@ -70,9 +76,7 @@ The AI can use the running information to provide guidance such as:
 * General training suggestions
 * Ways to maintain a more sustainable running routine
 
-The idea isn't to replace a professional coach or medical advice.
-
-Instead, it acts as an **accessible first layer of guidance** that helps runners think about how they are approaching their training.
+The AI coach is intended as a supportive tool rather than a replacement for professional coaching or medical advice.
 
 ---
 
@@ -80,7 +84,14 @@ Instead, it acts as an **accessible first layer of guidance** that helps runners
 
 The frontend of Pace is built using **React** and is deployed completely online using **Vercel**.
 
-🌐 **Frontend:** Vercel
+### Frontend responsibilities include:
+
+* Creating the user interface
+* Handling user interaction
+* Collecting running information
+* Communicating with the backend through APIs
+* Displaying stored running data
+* Providing the AI coach interface
 
 The interface was designed to be more than just a collection of forms and buttons. A major focus of the project was creating a clean, modern experience that actually feels like a running-focused application.
 
@@ -88,13 +99,17 @@ The UI has been carefully structured around the flow of the application:
 
 **Record Run → View Information → Get AI Guidance → Continue Running**
 
-### Design
+---
 
-The project also makes use of components and visual effects inspired by **React Bits**, including the splash/cursor-style effects used to complement the overall visual identity of the website.
+## ✨ UI & Design
 
-Rather than adding effects randomly, the animations were chosen to fit the overall vibe of Pace and make the application feel more interactive and polished.
+A major part of Pace was the visual design and overall user experience.
 
-The goal was to make the application feel like an actual product rather than simply a college/demo project.
+The application uses custom styling along with components and visual effects inspired by **React Bits**. Interactive effects such as the splash/cursor effect were incorporated to complement the overall vibe of the website.
+
+The visual elements were chosen to make the application feel interactive and polished rather than looking like a basic form-based project.
+
+The goal was to create something that feels closer to an actual product than a simple college/demo application.
 
 ---
 
@@ -102,239 +117,23 @@ The goal was to make the application feel like an actual product rather than sim
 
 The backend is responsible for handling the application's data and communication between the frontend, database, and AI functionality.
 
-The backend is hosted on **Render**, allowing the application to communicate with the frontend remotely through APIs.
+The backend is built using **Node.js and Express.js** and is hosted on **Render**.
 
 ### Backend responsibilities include:
 
 * Handling requests from the React frontend
 * Receiving submitted running data
+* Processing API requests
 * Storing and retrieving run information
-* Communicating with the database
+* Communicating with MongoDB Atlas
 * Handling AI-coach related requests
 * Sending processed information back to the frontend
 
-The frontend and backend are therefore completely separated.
+The frontend and backend are completely separated and communicate through API requests.
 
-```text
-React Frontend
-      │
-      │ API Requests
-      ▼
-Backend / API
-(Render)
-      │
-      ├──────────────► MongoDB Atlas
-      │
-      └──────────────► AI Coach
+```
 ```
 
----
-
-# ☁️ Database
-
-Pace uses **MongoDB Atlas** for online data storage.
-
-Instead of storing runs inside the local machine, the application's data is stored remotely in a cloud-hosted MongoDB database.
-
-This means that the application can:
-
-* Persist data between sessions
-* Retrieve previous runs
-* Work with a remotely hosted backend
-* Keep the application independent from a local database
-
-The database forms the persistent storage layer of the application.
-
-```text
-User
- │
- ▼
-React
- │
- ▼
-Render Backend
- │
- ▼
-MongoDB Atlas
- │
- ▼
-Stored Running Data
-```
-
----
-
-# 🌍 Fully Deployed Architecture
-
-One of the important aspects of this project is that **Pace is not dependent on localhost**.
-
-The complete application is deployed online.
-
-### Deployment
-
-| Component     | Technology             | Hosting       |
-| ------------- | ---------------------- | ------------- |
-| Frontend      | React                  | Vercel        |
-| Backend       | Node.js / API          | Render        |
-| Database      | MongoDB                | MongoDB Atlas |
-| AI Coach      | AI API integration     | Cloud         |
-| UI Components | React Bits + custom UI | —             |
-
-This allows the application to function as a real distributed web application:
-
-```text
-                    ┌─────────────────┐
-                    │      USER       │
-                    └────────┬────────┘
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │ React Frontend  │
-                    │     Vercel      │
-                    └────────┬────────┘
-                             │
-                        API Requests
-                             │
-                             ▼
-                    ┌─────────────────┐
-                    │     Backend     │
-                    │     Render      │
-                    └───────┬─┬───────┘
-                            │ │
-              ┌─────────────┘ └─────────────┐
-              ▼                             ▼
-     ┌─────────────────┐          ┌─────────────────┐
-     │  MongoDB Atlas  │          │    AI Coach     │
-     │   Data Storage  │          │   Suggestions   │
-     └─────────────────┘          └─────────────────┘
-```
-
-Because the frontend, backend, and database are all hosted remotely, the project can be accessed from anywhere with an internet connection.
-
----
-
-# 🧠 Why I Built Pace
-
-Running can be a very accessible sport, but it is also easy to fall into the mindset of **"more is always better."**
-
-Running faster, running longer, or running more frequently doesn't necessarily mean that someone is training better.
-
-Pace was built around the idea that runners should be able to look at their activity, understand how they are progressing, and receive guidance that encourages **consistency over excessive effort**.
-
-The application therefore combines:
-
-**Running Data + Persistent Storage + AI Guidance + A Focused User Experience**
-
-into one platform.
-
----
-
-# 🛠️ Tech Stack
-
-### Frontend
-
-* React
-* JavaScript
-* HTML
-* CSS
-* React Bits
-* Vercel
-
-### Backend
-
-* Node.js
-* Express.js
-* REST APIs
-* Render
-
-### Database
-
-* MongoDB
-* MongoDB Atlas
-
-### AI
-
-* AI-powered running coach
-* API-based AI integration
-
----
-
-# 🔄 Application Flow
-
-A typical interaction with Pace looks like this:
-
-### 1. Open Pace
-
-The user accesses the application through the deployed Vercel website.
-
-### 2. Record a Run
-
-The user enters their running information through the run form.
-
-### 3. Send Data
-
-The React frontend sends the information to the backend hosted on Render.
-
-### 4. Store the Run
-
-The backend processes the request and stores the running data in MongoDB Atlas.
-
-### 5. Access Running History
-
-The stored data can later be retrieved and displayed to the user.
-
-### 6. Ask the AI Coach
-
-The user can interact with the AI coach directly from the application and ask for suggestions based on their running activity.
-
-### 7. Get Guidance
-
-The AI processes the relevant information and provides recommendations intended to help the user approach their training more sustainably.
-
----
-
-# 📌 Project Highlights
-
-* 🌐 Fully deployed full-stack application
-* ⚛️ React-based frontend
-* 🖥️ Node.js/Express backend
-* ☁️ MongoDB Atlas cloud database
-* 🚀 Vercel frontend deployment
-* 🔧 Render backend deployment
-* 🤖 Integrated AI running coach
-* 📚 Persistent running history
-* 🎨 Custom modern UI
-* ✨ Interactive visual effects
-* 🔗 Frontend-backend API communication
-* 📱 Accessible remotely without localhost dependencies
-
----
-
-# 🎯 Future Improvements
-
-Pace can be expanded into a much more comprehensive running platform.
-
-Potential improvements include:
-
-* 📈 Running analytics and graphs
-* 📊 Pace and distance trends
-* ❤️ Heart-rate integration
-* 🗓️ Training plans
-* 🎯 Personalized running goals
-* 🏆 Progress tracking
-* 🔔 Recovery reminders
-* 🧠 More advanced AI coaching
-* 📱 Improved mobile experience
-* ⌚ Integration with running/wearable devices
-
----
-
-# 👨‍💻 Project
-
-Pace was developed as a full-stack project combining frontend development, backend API development, cloud database management, deployment, and AI integration.
-
-The project was built with the intention of going beyond a locally running prototype and creating an application that is **actually accessible, persistent, and usable online.**
-
-### Live Demo
 
 🌐 **https://pace-topaz-chi.vercel.app/**
 
