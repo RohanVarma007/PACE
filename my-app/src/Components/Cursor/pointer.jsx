@@ -16,7 +16,6 @@ export default function Pointer() {
         RAINBOW_MODE={false}
         COLOR="#00d992"
       />
-      <Outlet />
     </>
   );
 }

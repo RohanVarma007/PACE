@@ -3,7 +3,12 @@ import { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
 import API from "../../api.jsx";
 function RunForm({ runIdProp, onDataLoaded }) {
+  console.log("RUNFORM RENDERED");
   const { runId } = useParams();
+  console.log("RUNFORM:", {
+    runIdProp,
+    urlRunId: runId,
+  });
   const finalRunId = runIdProp || runId;
   const [isEditing, setIsEditing] = useState(!finalRunId);
   const [existingRunId, setExistingRunId] = useState(finalRunId || null);
