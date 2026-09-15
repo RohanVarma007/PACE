@@ -2,14 +2,13 @@ import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../../api.jsx";
 
-export default function Signup() {
+export default function Signup({ setLoggedIn }) {
   const { register, handleSubmit } = useForm({
     defaultValues: {
       username: "",
       password: "",
     }
   });
-
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
@@ -19,14 +18,13 @@ export default function Signup() {
         console.log("Signup successful");
         localStorage.setItem("username", response.data.username);
         localStorage.setItem("id", response.data.id);
+        setLoggedIn(true);
         navigate("/userdata");
       }
-
     } catch (err) {
       console.error("Signup failed:", err);
     }
   };
-
 
   return (
     <div style={{
@@ -41,7 +39,6 @@ export default function Signup() {
         width: '100%',
         maxWidth: '400px'
       }}>
-        {/* Logo */}
         <div style={{
           textAlign: 'center',
           marginBottom: '40px'
@@ -66,7 +63,6 @@ export default function Signup() {
           </p>
         </div>
 
-        {/* Card */}
         <div className="card" style={{
           padding: '40px 32px'
         }}>

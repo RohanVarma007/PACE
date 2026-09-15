@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, Link } from "react-router-dom";
 import API from "../../api.jsx";
 
-export default function Login() {
+export default function Login({ setLoggedIn }) {
   const { register, handleSubmit } = useForm({
     defaultValues: {
       username: "",
@@ -11,7 +11,6 @@ export default function Login() {
     }
   });
   const [loginError, setLoginError] = useState(null);
-
   const navigate = useNavigate();
 
   const onSubmit = async (data) => {
@@ -21,8 +20,8 @@ export default function Login() {
         console.log("Login successful");
         localStorage.setItem("username", response.data.username);
         localStorage.setItem("id", response.data.id);
+        setLoggedIn(true);
         navigate("/userdata");
-
       }
     } catch (err) {
       console.error("Login failed:", err);
@@ -43,7 +42,6 @@ export default function Login() {
         width: '100%',
         maxWidth: '400px'
       }}>
-        {/* Logo */}
         <div style={{
           textAlign: 'center',
           marginBottom: '40px'
@@ -68,7 +66,6 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Card */}
         <div className="card" style={{
           padding: '40px 32px'
         }}>
