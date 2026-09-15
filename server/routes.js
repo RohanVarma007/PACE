@@ -51,7 +51,7 @@ router.post("/coach", async (req, res) => {
         res.status(201).json(coach);
     } catch (err) {
     console.log("BACKEND ERROR:", err.response?.data);
-    setError(err.response?.data?.error || err.message);
+    return res.status(500).json({ error: err.message });
 }
 });
 
